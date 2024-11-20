@@ -1,0 +1,36 @@
+name: Build Executables
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/Commit to Build'
+        default: 'master'
+jobs:
+  build-mac:
+    name: Build MacOS binary
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.22'
+    - name: Install homebrew
+      shell: bash
+      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    - name: Install dependencies
+      shell: bash
+      run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake
+    - name: Clone crossfire-client
+      shell: bash
+      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && git checkout ${{ github.event.inputs.tag }}
+    - name: Build
+      shell: bash
+      working-directory: crossfire-client
+      run: mkdir build && cd build && cmake .. && make && make install
+    - name: Upload DMG
+      uses: actions/upload-artifact@v3
+      with:
+        name: Crossfire-GTK2.dmg
+        path: crossfire-client/build/Crossfire-GTK2.dmg
