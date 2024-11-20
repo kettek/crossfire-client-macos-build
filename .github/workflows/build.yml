@@ -25,7 +25,7 @@ jobs:
       run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }}
     - name: Patch
       shell: bash
-      run: cd crossfire-client && patch -s -p0 < ../patch.diff
+      run: cd crossfire-client && git apply ../patch.diff
     - name: Copy macos build script
       shell: bash
       run: cd crossfire-client && mkdir gtk-v2/macos cp ../macos-package.sh gtk-v2/macos/
