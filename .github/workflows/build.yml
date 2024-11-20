@@ -20,9 +20,9 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake libicns
-    - name: Clone crossfire-client
+    - name: Clone crossfire client and sounds
       shell: bash
-      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }}
+      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }} && git clone https://git.code.sf.net/p/crossfire/crossfire-sounds sounds
     - name: Patch
       shell: bash
       run: cd crossfire-client && git apply ../patch.diff
