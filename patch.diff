@@ -33,15 +33,11 @@ index dd77b6e..b2a8d27 100644
  
  # By default, silence warnings about deprecated definitions. We know we're
 diff --git a/gtk-v2/src/CMakeLists.txt b/gtk-v2/src/CMakeLists.txt
-index f9d3b30..a6e8ffa 100644
+index f9d3b30..db5cc0c 100644
 --- a/gtk-v2/src/CMakeLists.txt
 +++ b/gtk-v2/src/CMakeLists.txt
-@@ -59,8 +59,15 @@ target_link_libraries(crossfire-client-gtk2 cfclient
-     m # math
- )
+@@ -61,6 +61,16 @@ target_link_libraries(crossfire-client-gtk2 cfclient
  
-+install(TARGETS crossfire-client-gtk2 DESTINATION ${CMAKE_INSTALL_BINDIR})
-+
  if(MINGW OR WIN32)
      target_link_libraries(crossfire-client-gtk2 wsock32)
 +elseif(APPLE)
@@ -50,10 +46,14 @@ index f9d3b30..a6e8ffa 100644
 +        ${COREFOUNDATION}
 +        ${APPLICATIONSERVICES}
 +    )
-+    install(CODE "execute_process(COMMAND ../gtk-v2/macos/macos-package.sh ${CMAKE_INSTALL_BINDIR}/crossfire-client-gtk2)")
  endif()
--
--install(TARGETS crossfire-client-gtk2 DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ install(TARGETS crossfire-client-gtk2 DESTINATION ${CMAKE_INSTALL_BINDIR})
++
++if(APPLE)
++    install(CODE "execute_process(COMMAND ../gtk-v2/macos/macos-package.sh ${CMAKE_INSTALL_BINDIR}/crossfire-client-gtk2)")
++endif()
+\ No newline at end of file
 diff --git a/gtk-v2/src/keys.c b/gtk-v2/src/keys.c
 index 0ee82f4..15d43e7 100644
 --- a/gtk-v2/src/keys.c
