@@ -7,6 +7,9 @@ on:
       tag:
         description: 'Tag/Commit to Build'
         default: 'master'
+      release:
+        description: 'Name of Release'
+        default: 'master'
 env:
   HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
 jobs:
@@ -39,7 +42,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: crossfire-client/build/Crossfire-GTK2.dmg
-        name: ${{ github.event.inputs.tag }}
-        tag_name: ${{ github.event.inputs.tag }}
+        name: ${{ github.event.inputs.release }}
+        tag_name: ${{ github.event.inputs.release }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
