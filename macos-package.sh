@@ -15,7 +15,6 @@ MACDIR="$APPDIR/Contents/MacOS"
 RESDIR="$APPDIR/Contents/Resources"
 INFOPL="$APPDIR/Contents/Info.plist"
 SCRIPT="$MACDIR/$APPNAME"
-LIBDIR="/opt/homebrew/opt"
 ICONS="$RESDIR/$APPNAME.icns"
 LONGVER="1.0.0-unknown"
 SHORTVER="1.0.0"
@@ -58,7 +57,7 @@ echo "  ok"
 # Find and copy all used dylibs to our resources dir and fix our binary to point to our local ones.
 echo " * Copying libraries and adjusting binary lib paths"
 otool -L $PROGPATH
-LIBS=$(otool -L $PROGPATH | grep -E "^\s*$LIBDIR/(.*)" | awk -F ' ' '{print $1}')
+LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
 for i in $LIBS
 do
 	echo $i
