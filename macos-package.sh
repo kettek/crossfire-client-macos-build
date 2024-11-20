@@ -58,7 +58,7 @@ echo "  ok"
 # Find and copy all used dylibs to our resources dir and fix our binary to point to our local ones.
 echo " * Copying libraries and adjusting binary lib paths"
 otool -L $PROGPATH
-LIBS=$(otool -L $PROGPATH | grep -E '^\s*$LIBDIR/(.*)' | awk -F ' ' '{print $1}')
+LIBS=$(otool -L $PROGPATH | grep -E "^\s*$LIBDIR/(.*)" | awk -F ' ' '{print $1}')
 for i in $LIBS
 do
 	echo $i
