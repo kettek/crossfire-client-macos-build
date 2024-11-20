@@ -60,11 +60,34 @@ otool -L $PROGPATH
 LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
 for i in $LIBS
 do
-	echo $i
-	cp $i $RESDIR
 	install_name_tool -change $i @executable_path/$(basename $i) $PROGPATH
 done
 echo "  ok"
+
+# We have to collect _all_ dylibs, so we use this recursive func.
+deps=()
+get_deps()
+{
+	for i in "${deps[@]}"
+	do
+		if [ "$i" == "$1" ] ; then
+			return
+		fi
+	done
+	deps+=($1)
+	echo $1
+	cp $1 $RESDIR
+
+	DEPS=$(otool -L $1 | awk "!/usr\/lib/ && !/System\/Library/" | awk -F ' ' '{print $1}')
+	for i in $DEPS
+	do
+		if [[ $i != *: ]]
+		then
+			get_deps $i
+		fi
+	done
+}
+get_deps $PROGPATH
 
 # Create our plist file.
 echo " * Writing Info.plist"
