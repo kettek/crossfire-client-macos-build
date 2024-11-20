@@ -56,13 +56,6 @@ echo "  ok"
 
 # Find and copy all used dylibs to our resources dir and fix our binary to point to our local ones.
 echo " * Copying libraries and adjusting binary lib paths"
-otool -L $PROGPATH
-LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
-for i in $LIBS
-do
-	install_name_tool -change $i @executable_path/$(basename $i) $PROGPATH
-done
-echo "  ok"
 
 # We have to collect _all_ dylibs, so we use this recursive func.
 deps=()
@@ -88,6 +81,14 @@ get_deps()
 	done
 }
 get_deps $PROGPATH
+
+# Now fix up the crossfire binary.
+LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
+for i in $LIBS
+do
+	install_name_tool -change $i @executable_path/$(basename $i) $PROGPATH
+done
+echo "  ok"
 
 # Create our plist file.
 echo " * Writing Info.plist"
