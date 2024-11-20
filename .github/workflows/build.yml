@@ -28,7 +28,7 @@ jobs:
       run: cd crossfire-client && git apply ../patch.diff
     - name: Copy macos build script
       shell: bash
-      run: cd crossfire-client && mkdir gtk-v2/macos cp ../macos-package.sh gtk-v2/macos/
+      run: cd crossfire-client && mkdir gtk-v2/macos && cp ../macos-package.sh gtk-v2/macos/
     - name: Compile
       run: cd crossfire-client && mkdir build && cd build && cmake .. && make && make install
     - name: Upload DMG
