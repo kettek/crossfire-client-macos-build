@@ -15,7 +15,7 @@ env:
 jobs:
   build-mac:
     name: Build MacOS binary
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v3
     - name: Install homebrew
