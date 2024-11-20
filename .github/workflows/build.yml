@@ -19,7 +19,7 @@ jobs:
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     - name: Install dependencies
       shell: bash
-      run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake icns2png
+      run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake libicns
     - name: Clone crossfire-client
       shell: bash
       run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }}
