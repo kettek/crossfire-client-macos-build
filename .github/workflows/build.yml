@@ -1,6 +1,5 @@
 name: Build Executables
 on:
-  push:
   workflow_dispatch:
     inputs:
       tag:
@@ -34,8 +33,11 @@ jobs:
         cp ../macos-package.sh ./gtk-v2/macos/macos-package.sh
     - name: Compile
       run: cd crossfire-client && mkdir build && cd build && cmake .. && make && make install
-    - name: Upload DMG
-      uses: actions/upload-artifact@v3
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: Crossfire-GTK2.dmg
-        path: crossfire-client/build/Crossfire-GTK2.dmg
+        files: crossfire-client/build/Crossfire-GTK2.dmg
+        name: ${{ github.event.inputs.tag }}
+        tag_name: ${{ github.event.inputs.tag }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
