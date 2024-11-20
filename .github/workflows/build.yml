@@ -6,6 +6,8 @@ on:
       tag:
         description: 'Tag/Commit to Build'
         default: 'master'
+env:
+  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
 jobs:
   build-mac:
     name: Build MacOS binary
@@ -20,7 +22,7 @@ jobs:
       run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake
     - name: Clone crossfire-client
       shell: bash
-      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && git checkout ${{ github.event.inputs.tag }}
+      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }}
     - name: Patch
       shell: bash
       working-directory: crossfire-client
