@@ -12,10 +12,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.22'
     - name: Install homebrew
       shell: bash
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -25,9 +21,15 @@ jobs:
     - name: Clone crossfire-client
       shell: bash
       run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && git checkout ${{ github.event.inputs.tag }}
-    - name: Build
+    - name: Patch
       shell: bash
       working-directory: crossfire-client
+      run: patch -s -p0 < ../patch.diff
+    - name: Copy macos build script
+      shell: bash
+      working-directory: crossfire-client
+      run: mkdir gtk-v2/macos cp ../macos-package.sh gtk-v2/macos/
+    - name: Compile
       run: mkdir build && cd build && cmake .. && make && make install
     - name: Upload DMG
       uses: actions/upload-artifact@v3

@@ -1,0 +1,57 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dd77b6e..b2a8d27 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,7 +11,10 @@ option(SOUND "Sound support (requires sdl_mixer)" ON)
+ set(CMAKE_C_STANDARD 99)
+ set(CMAKE_C_STANDARD_REQUIRED ON)
+ 
+-if(UNIX)
++if(APPLE)
++    add_definitions(-DMACOS)
++    set(CMAKE_INSTALL_PREFIX ".")
++elseif(UNIX)
+     # If Linux or other Unix-like, get gio to work by defining _BSD_SOURCE
+     add_definitions(-D_DEFAULT_SOURCE)
+ elseif(MINGW OR WIN32)
+@@ -35,6 +38,17 @@ add_definitions(
+     ${PNG_DEFINITIONS}
+ )
+ 
++if(APPLE)
++    # pkg_check_modules generates output from pkg-config that has "-framework Cocoa",
++    # however this in turns gets turned into "-framework;-lCocoa", which is wrong.
++    # Removing the offending values and linking the needed frameworks here
++    # fixes the issue.
++    list(REMOVE_ITEM GTK_LDFLAGS "-framework" "Cocoa" "CoreFoundation" "ApplicationServices")
++    find_library(COCOA Cocoa REQUIRED)
++    find_library(COREFOUNDATION CoreFoundation REQUIRED)
++    find_library(APPLICATIONSERVICES ApplicationServices REQUIRED)
++endif()
++
+ include(${VALA_USE_FILE})
+ 
+ # By default, silence warnings about deprecated definitions. We know we're
+diff --git a/gtk-v2/src/keys.c b/gtk-v2/src/keys.c
+index 0ee82f4..15d43e7 100644
+--- a/gtk-v2/src/keys.c
++++ b/gtk-v2/src/keys.c
+@@ -22,12 +22,15 @@
+ #include <gdk/gdkkeysyms.h>
+ #include <gtk/gtk.h>
+ 
+-#ifndef WIN32
+-#include <gdk/gdkx.h>
+-#else
++#if defined WIN32
+ #include <gdk/gdkwin32.h>
+ #define NoSymbol 0L                     /**< Special KeySym */
+ typedef int KeyCode;                    /**< Undefined type */
++#elif defined MACOS
++#define NoSymbol 0L                     /**< Special KeySym */
++typedef int KeyCode;                    /**< Undefined type */
++#else
++#include <gdk/gdkx.h>
+ #endif
+ 
+ #include "main.h"
