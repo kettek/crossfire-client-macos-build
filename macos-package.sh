@@ -87,7 +87,7 @@ get_deps $PROGPATH
 # Also copy over GTK and GDK pixbuf libs and whatnot.
 mkdir -p $SHAREDIR
 mkdir -p $LIBDIR
-cp -rpfv $(pkg-config --variable=libdir gtk+-2.0) $LIBDIR
+cp -rpfv $(pkg-config --variable=libdir gtk+-2.0) $RESDIR
 cp -rpfv $(dirname $(pkg-config --variable=gdk_pixbuf_binarydir gdk-pixbuf-2.0)) $LIBDIR
 cp -rfpv $(pkg-config --variable=prefix gtk+-2.0)/share/themes $SHAREDIR
 cp -rfpv $HOMEBREW_PREFIX/share/icons $SHAREDIR
