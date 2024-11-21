@@ -22,7 +22,7 @@ LONGVER="1.0.0-unknown"
 SHORTVER="1.0.0"
 THEMETAR="https://github.com/vinceliuice/WhiteSur-gtk-theme/raw/refs/heads/master/release/WhiteSur-Light.tar.xz"
 
-LAUNCH_ENV="DYLD_LIBRARY_PATH=\$DIR/Resources GTK2_RC_FILES=\$DIR/Resources/gtk-2.0/gtkrc GTK_EXE_PREFIX=\$DIR/Resources GTK_DATA_PREFIX=\$DIR/Resources"
+LAUNCH_ENV="DYLD_LIBRARY_PATH=\$DIR/Resources GTK2_RC_FILES=\$DIR/Resources/gtk-2.0/gtkrc GTK_EXE_PREFIX=\$DIR/Resources GTK_DATA_PREFIX=\$DIR/Resources GDK_PIXBUF_MODULE_FILE=\$DIR/Resources/loaders.cache"
 
 echo " * Getting Version"
 if command -v git 2>&1 >/dev/null
@@ -88,9 +88,11 @@ get_deps $PROGPATH
 mkdir -p $SHAREDIR
 mkdir -p $LIBDIR
 cp -rpfv $(pkg-config --variable=libdir gtk+-2.0) $RESDIR
-cp -rpfv $(dirname $(pkg-config --variable=gdk_pixbuf_binarydir gdk-pixbuf-2.0)) $LIBDIR
 cp -rfpv $(pkg-config --variable=prefix gtk+-2.0)/share/themes $SHAREDIR
 cp -rfpv $HOMEBREW_PREFIX/share/icons $SHAREDIR
+# Copy pixbuf loaders and cache directly into RESDIR for easy resolution.
+cp -fv $(pkg-config --variable=gdk_pixbuf_cache_file) $RESDIR
+cp -rpfv $(pkg-config --variable=gdk_pixbuf_moduledir)/* $RESDIR
 
 # Now fix up the crossfire binary.
 LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
