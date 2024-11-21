@@ -89,10 +89,9 @@ mkdir -p $SHAREDIR
 mkdir -p $LIBDIR
 cp -rpfv $(pkg-config --variable=libdir gtk+-2.0) $RESDIR
 cp -rfpv $(pkg-config --variable=prefix gtk+-2.0)/share/themes $SHAREDIR
-cp -rfpv $HOMEBREW_PREFIX/share/icons $SHAREDIR
 # Copy pixbuf loaders and cache directly into RESDIR for easy resolution.
-cp -fv $(pkg-config --variable=gdk_pixbuf_cache_file) $RESDIR
-cp -rpfv $(pkg-config --variable=gdk_pixbuf_moduledir)/* $RESDIR
+cp -fv $(pkg-config --variable=gdk_pixbuf_cache_file gdk-pixbuf-2.0) $RESDIR
+cp -rpfv $(pkg-config --variable=gdk_pixbuf_moduledir gdk-pixbuf-2.0)/* $RESDIR
 
 # Now fix up the crossfire binary.
 LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
