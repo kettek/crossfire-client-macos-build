@@ -22,7 +22,7 @@ LONGVER="1.0.0-unknown"
 SHORTVER="1.0.0"
 THEMETAR="https://github.com/vinceliuice/WhiteSur-gtk-theme/raw/refs/heads/master/release/WhiteSur-Light.tar.xz"
 
-LAUNCH_ENV="DYLD_LIBRARY_PATH=\$DIR/Resources GTK2_RC_FILES=\$DIR/Resources/gtk-2.0/gtkrc"
+LAUNCH_ENV="DYLD_LIBRARY_PATH=\$DIR/Resources GTK2_RC_FILES=\$DIR/Resources/gtk-2.0/gtkrc GTK_EXE_PREFIX=\$DIR/Resources/lib GTK_DATA_PREFIX=\$DIR/Resources"
 
 echo " * Getting Version"
 if command -v git 2>&1 >/dev/null
