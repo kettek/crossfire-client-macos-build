@@ -16,6 +16,8 @@ RESDIR="$APPDIR/Contents/Resources"
 INFOPL="$APPDIR/Contents/Info.plist"
 SCRIPT="$MACDIR/$APPNAME"
 ICONS="$RESDIR/$APPNAME.icns"
+LIBDIR="$RESDIR/lib/"
+SHAREDIR="$RESDIR/share/"
 LONGVER="1.0.0-unknown"
 SHORTVER="1.0.0"
 THEMETAR="https://github.com/vinceliuice/WhiteSur-gtk-theme/raw/refs/heads/master/release/WhiteSur-Light.tar.xz"
@@ -81,6 +83,12 @@ get_deps()
 	done
 }
 get_deps $PROGPATH
+
+# Also copy over GTK and GDK pixbuf libs and whatnot.
+cp -rpfv $(pkg-config --variable=libdir gtk+-2.0) $LIBDIR
+cp -rpfv $(dirname $(pkg-config --variable=gdk_pixbuf_binarydir gdk-pixbuf-2.0)) $LIBDIR
+cp -rfpv $(pkg-config --variable=prefix gtk+-2.0)/share/themes $SHAREDIR
+cp -rfpv $HOMEBREW_PREFIX/share/icons $SHAREDIR
 
 # Now fix up the crossfire binary.
 LIBS=$(otool -L $PROGPATH | awk '!/usr\/lib/ && !/System\/Library/' | awk -F ' ' '{print $1}')
