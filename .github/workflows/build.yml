@@ -5,44 +5,56 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag/Commit to Build'
-        default: 'master'
+        description: "Tag/Commit to Build"
+        default: "master"
       release:
-        description: 'Name of Release'
-        default: 'master'
+        description: "Name of Release"
+        default: "master"
 env:
   HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
 jobs:
   build-mac:
-    name: Build MacOS binary
-    runs-on: macos-13
+    strategy:
+      matrix:
+        os: [macos-13, macos-15]
+        include:
+          - os: macos-13
+            release_suffix: "-x86_64"
+          - os: macos-15
+    runs-on: ${{ matrix.os }}
+    name: Build MacOS binaries
     steps:
-    - uses: actions/checkout@v3
-    - name: Install homebrew
-      shell: bash
-      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    - name: Install dependencies
-      shell: bash
-      run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake libicns
-    - name: Clone crossfire client and sounds
-      shell: bash
-      run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }} && git clone https://git.code.sf.net/p/crossfire/crossfire-sounds sounds
-    - name: Patch
-      shell: bash
-      run: cd crossfire-client && git apply ../patch.diff
-    - name: Copy macos build script
-      shell: bash
-      run: |
-        cd crossfire-client
-        mkdir gtk-v2/macos
-        cp ../macos-package.sh ./gtk-v2/macos/macos-package.sh
-    - name: Compile
-      run: cd crossfire-client && mkdir build && cd build && cmake .. && make && make install
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: crossfire-client/build/Crossfire-GTK2.dmg
-        name: ${{ github.event.inputs.release }}
-        tag_name: ${{ github.event.inputs.release }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Install homebrew
+        shell: bash
+        run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - name: Install dependencies
+        shell: bash
+        run: brew install gtk+ vala sdl2_mixer pkgconf libpng gettext cmake libicns
+      - name: Clone crossfire client and sounds
+        shell: bash
+        run: git clone https://git.code.sf.net/p/crossfire/crossfire-client && cd crossfire-client && git checkout ${{ github.event.inputs.tag }} && git clone https://git.code.sf.net/p/crossfire/crossfire-sounds sounds
+      - name: Patch
+        shell: bash
+        run: cd crossfire-client && git apply ../patch.diff
+      - name: Copy macos build script
+        shell: bash
+        run: |
+          cd crossfire-client
+          mkdir gtk-v2/macos
+          cp ../macos-package.sh ./gtk-v2/macos/macos-package.sh
+      - name: Compile
+        run: cd crossfire-client && mkdir build && cd build && cmake .. && make && make install
+      - name: Rename x86_64
+        if: matrix.release_suffix == '-x86_64'
+        run: |
+          cd crossfire-client/build
+          mv Crossfire-GTK2.dmg Crossfire-GTK2${{matrix.release_suffix}}.dmg
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: crossfire-client/build/Crossfire-GTK2${{matrix.release_suffix}}.dmg
+          name: ${{ github.event.inputs.release }}
+          tag_name: ${{ github.event.inputs.release }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
